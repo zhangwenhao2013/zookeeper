@@ -569,6 +569,12 @@ public class QuorumCnxManager {
 
         try {
             protocolVersion = din.readLong();
+            /**
+             * server id 而不是协议id
+             * 而是 myid
+             *
+             * sid 可以理解为 success id
+             */
             if (protocolVersion >= 0) { // this is a server id and not a protocol version
                 sid = protocolVersion;
             } else {
@@ -600,6 +606,9 @@ public class QuorumCnxManager {
         // do authenticating learner
         authServer.authenticate(sock, din);
         //If wins the challenge, then close the new connection.
+        /**
+         * 比较 myid, 大的竞选胜出
+         */
         if (sid < self.getId()) {
             /*
              * This replica might still believe that the connection to sid is
@@ -615,8 +624,12 @@ public class QuorumCnxManager {
              * Now we start a new connection
              */
             LOG.debug("Create new connection to server: {}", sid);
+            // 关闭当前竞争失败的其他zk服务
             closeSocket(sock);
 
+            /**
+             * connectOne 连接 来竞争的 sid electionAddr 对应的zk服务 通知其竞争失败,下次竞争用胜利者的myid
+             */
             if (electionAddr != null) {
                 connectOne(sid, electionAddr);
             } else {
@@ -638,11 +651,19 @@ public class QuorumCnxManager {
             }
 
             senderWorkerMap.put(sid, sw);
-
+            /**
+             * 记录这个比自己大的 sid
+             */
             queueSendMap.putIfAbsent(sid,
                     new ArrayBlockingQueue<ByteBuffer>(SEND_CAPACITY));
 
+            /**
+             * 发送选票
+             */
             sw.start();
+            /**
+             * 接收选票 并保存到 recvQueue 队列中
+             */
             rw.start();
         }
     }
@@ -912,6 +933,9 @@ public class QuorumCnxManager {
                         LOG.info("Creating TLS-only quorum server socket");
                         ss = new UnifiedServerSocket(self.getX509Util(), false);
                     } else {
+                        /**
+                         * 创建Socket
+                         */
                         ss = new ServerSocket();
                     }
 
@@ -929,6 +953,9 @@ public class QuorumCnxManager {
                     LOG.info("{} is accepting connections now, my election bind port: {}", QuorumCnxManager.this.mySid, addr.toString());
                     setName(addr.toString());
                     ss.bind(addr);
+                    /**
+                     * 循环接收 其他zk发来的消息
+                     */
                     while (!shutdown) {
                         try {
                             client = ss.accept();
@@ -939,6 +966,10 @@ public class QuorumCnxManager {
                             // enabled. This is required because sasl server
                             // authentication process may take few seconds to finish,
                             // this may delay next peer connection requests.
+
+                            /**
+                             * 接收和处理消息
+                             */
                             if (quorumSaslAuthEnabled) {
                                 receiveConnectionAsync(client);
                             } else {

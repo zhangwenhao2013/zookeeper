@@ -652,6 +652,10 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
         // cnxnExpiryQueue. These don't need to be the same, but the expiring
         // interval passed into the ExpiryQueue() constructor below should be
         // less than or equal to the timeout.
+
+        /**
+         * 队列
+         */
         cnxnExpiryQueue =
             new ExpiryQueue<NIOServerCnxn>(sessionlessCnxnTimeout);
         expirerThread = new ConnectionExpirerThread();
@@ -681,11 +685,17 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
             selectorThreads.add(new SelectorThread(i));
         }
 
+        /**
+         * 绑定ServerSocket端口
+         */
         this.ss = ServerSocketChannel.open();
         ss.socket().setReuseAddress(true);
         LOG.info("binding to port " + addr);
+        //绑定端口
         ss.socket().bind(addr);
+        // 设置非阻塞模式
         ss.configureBlocking(false);
+        // 委托给AcceptThread 去关联  AcceptThread 内部有 Selector
         acceptThread = new AcceptThread(ss, addr, selectorThreads);
     }
 
@@ -747,6 +757,9 @@ public class NIOServerCnxnFactory extends ServerCnxnFactory {
             }
         }
         // ensure thread is started once and only once
+        /**
+         * 收发线程
+         */
         if (acceptThread.getState() == Thread.State.NEW) {
             acceptThread.start();
         }

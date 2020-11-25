@@ -148,7 +148,9 @@ public class QuorumPeerConfig {
             } finally {
                 in.close();
             }
-            
+            /**
+             * cfg 涉及的所有参数配置
+             */
             parseProperties(cfg);
         } catch (IOException e) {
             throw new ConfigException("Error processing " + path, e);
@@ -373,6 +375,11 @@ public class QuorumPeerConfig {
             dataLogDir = dataDir;
         }
 
+        /**
+         * 如果 有配置clientPort(默认2181),
+         * 及时没有配置clientPortAddress, 默认使用 InetAddress.anyLocalAddress()
+         */
+
         if (clientPort == 0) {
             LOG.info("clientPort is not set");
             if (clientPortAddress != null) {
@@ -387,6 +394,9 @@ public class QuorumPeerConfig {
             LOG.info("clientPortAddress is {}", formatInetAddr(this.clientPortAddress));
         }
 
+        /**
+         * secureClientPort和clientPortAddress 同理
+         */
         if (secureClientPort == 0) {
             LOG.info("secureClientPort is not set");
             if (secureClientPortAddress != null) {
