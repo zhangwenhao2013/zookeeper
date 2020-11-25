@@ -674,6 +674,7 @@ public class FastLeaderElection implements Election {
      * Send notifications to all peers upon a change in our vote
      */
     private void sendNotifications() {
+        // 获取到配置中的所有 getVotingMembers 选票成员 遍历出他们的myid
         for (long sid : self.getCurrentAndNextConfigVoters()) {
             QuorumVerifier qv = self.getQuorumVerifier();
             ToSend notmsg = new ToSend(ToSend.mType.notification,
@@ -689,6 +690,9 @@ public class FastLeaderElection implements Election {
                       " (n.round), " + sid + " (recipient), " + self.getId() +
                       " (myid), 0x" + Long.toHexString(proposedEpoch) + " (n.peerEpoch)");
             }
+            /**
+             * 将消息添加到 sendqueue 队列中去
+             */
             sendqueue.offer(notmsg);
         }
     }
@@ -902,6 +906,9 @@ public class FastLeaderElection implements Election {
 
             LOG.info("New election. My id =  " + self.getId() +
                     ", proposed zxid=0x" + Long.toHexString(proposedZxid));
+            /**
+             * 发送消息到 队列
+             */
             sendNotifications();
 
             /*
@@ -913,6 +920,9 @@ public class FastLeaderElection implements Election {
                 /*
                  * Remove next notification from queue, times out after 2 times
                  * the termination time
+                 */
+                /**
+                 * 取出接收到的消息
                  */
                 Notification n = recvqueue.poll(notTimeout,
                         TimeUnit.MILLISECONDS);
