@@ -125,7 +125,7 @@ public class QuorumPeerMain {
         purgeMgr.start();
 
         /**
-         * 有配置
+         * 有配置 且是分布式
          */
         if (args.length == 1 && config.isDistributed()) {
             runFromConfig(config);

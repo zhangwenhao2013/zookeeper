@@ -1112,9 +1112,8 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                 le = new AuthFastLeaderElection(this, true);
                 break;
             case 3:
-                // TODO: 2020/11/25  Listener 监听内容是什么
                 /**
-                 * 创建QuorumCnxManager 内部有监听 Listener
+                 * 创建QuorumCnxManager 内部有监听 Listener (是一个ServerSocket)
                  */
                 QuorumCnxManager qcm = createCnxnManager();
                 QuorumCnxManager oldQcm = qcmRef.getAndSet(qcm);

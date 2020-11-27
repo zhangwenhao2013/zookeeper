@@ -572,8 +572,6 @@ public class QuorumCnxManager {
             /**
              * server id 而不是协议id
              * 而是 myid
-             *
-             * sid 可以理解为 success id
              */
             if (protocolVersion >= 0) { // this is a server id and not a protocol version
                 sid = protocolVersion;
