@@ -957,6 +957,9 @@ public class FastLeaderElection implements Election {
                         if (n.electionEpoch > logicalclock.get()) {
                             logicalclock.set(n.electionEpoch);
                             recvset.clear();
+                            /**
+                             * 选票机制  (优先轮次,再试事务id,在是myid) 竞选优胜的条件
+                             */
                             if(totalOrderPredicate(n.leader, n.zxid, n.peerEpoch,
                                     getInitId(), getInitLastLoggedZxid(), getPeerEpoch())) {
                                 updateProposal(n.leader, n.zxid, n.peerEpoch);

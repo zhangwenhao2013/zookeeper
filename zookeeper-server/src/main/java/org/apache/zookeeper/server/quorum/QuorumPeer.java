@@ -889,6 +889,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
          * 加载快照数据, 读取快照信息记录最新的记录行号 记录在QuorumPeer实例中
          */
         loadDataBase();
+        // TODO: 2020/12/1  NIOServerCnxnFactory 中的 start
         /**
          * 开启服务 默认是 NIOServerCnxnFactory ,也可以使用NettyServerCnxnFactory
          *
@@ -896,6 +897,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
          */
         startServerCnxnFactory();
         try {
+            // TODO: 2020/12/1  目前没看到什么特别的
             /**
              * QuorumPeer 构造函数中初始化的
              * JettyAdminServer ( zookeeper.admin.enableServer ="ture")
@@ -1258,6 +1260,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                                 }
                                 /**
                                  * 设置选票
+                                 * FastLeaderElection
                                  */
                                 setCurrentVote(makeLEStrategy().lookForLeader());
                             } catch (Exception e) {
