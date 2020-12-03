@@ -1260,7 +1260,7 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                                 }
                                 /**
                                  * 设置选票
-                                 * FastLeaderElection
+                                 * FastLeaderElection 
                                  */
                                 setCurrentVote(makeLEStrategy().lookForLeader());
                             } catch (Exception e) {

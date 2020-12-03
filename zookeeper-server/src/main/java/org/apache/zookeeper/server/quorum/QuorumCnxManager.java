@@ -891,6 +891,9 @@ public class QuorumCnxManager {
 
             // maximum retry count while trying to bind to election port
             // see ZOOKEEPER-3320 for more details
+            /**
+             *  maxRetry 默认值 3
+             */
             final Integer maxRetry = Integer.getInteger(ELECTION_PORT_BIND_RETRY,
                                                         DEFAULT_PORT_BIND_MAX_RETRY);
             if (maxRetry >= 0) {
@@ -917,10 +920,12 @@ public class QuorumCnxManager {
          */
         @Override
         public void run() {
+            // 重试次数
             int numRetries = 0;
             InetSocketAddress addr;
             Socket client = null;
             Exception exitException = null;
+            // portBindMaxRetry  默认值 3
             while ((!shutdown) && (portBindMaxRetry == 0 || numRetries < portBindMaxRetry)) {
                 LOG.debug("Listener thread started, myId: {}", self.getId());
                 try {

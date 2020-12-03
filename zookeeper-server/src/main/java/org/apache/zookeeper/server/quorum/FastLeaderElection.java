@@ -764,7 +764,9 @@ public class FastLeaderElection implements Election {
                 voteSet.addAck(entry.getKey());
             }
         }
-
+        /**
+         * 半数机制
+         */
         return voteSet.hasAllQuorums();
     }
 
@@ -932,6 +934,7 @@ public class FastLeaderElection implements Election {
                  * Otherwise processes new notification.
                  */
                 if(n == null){
+                    // 如果 manager 中 queueSendMap 队列中所有key对应的values 是null
                     if(manager.haveDelivered()){
                         sendNotifications();
                     } else {
@@ -953,6 +956,9 @@ public class FastLeaderElection implements Election {
                      */
                     switch (n.state) {
                     case LOOKING:
+                        /**
+                         * 比较投票轮次  如是收到的轮次更大  则清空选票, 只有轮次一致时才进行竞选
+                         */
                         // If notification > current, replace and send messages out
                         if (n.electionEpoch > logicalclock.get()) {
                             logicalclock.set(n.electionEpoch);
@@ -992,6 +998,9 @@ public class FastLeaderElection implements Election {
                         // don't care about the version if it's in LOOKING state
                         recvset.put(n.sid, new Vote(n.leader, n.zxid, n.electionEpoch, n.peerEpoch));
 
+                        /**
+                         * 半数机制
+                         */
                         if (termPredicate(recvset,
                                 new Vote(proposedLeader, proposedZxid,
                                         logicalclock.get(), proposedEpoch))) {
