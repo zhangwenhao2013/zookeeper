@@ -440,6 +440,13 @@ public class QuorumCnxManager {
         }
     }
 
+    /**
+     * 开启连接 将自己的选举地址,已经sid发送的目标服务器
+     * @param sock
+     * @param sid
+     * @return
+     * @throws IOException
+     */
     private boolean startConnection(Socket sock, Long sid)
             throws IOException {
         DataOutputStream dout = null;
@@ -605,7 +612,7 @@ public class QuorumCnxManager {
         authServer.authenticate(sock, din);
         //If wins the challenge, then close the new connection.
         /**
-         * 比较 myid, 大的竞选胜出
+         * 比较 myid,   只保留 大 --指向--> 小 的连接
          */
         if (sid < self.getId()) {
             /*
@@ -638,6 +645,12 @@ public class QuorumCnxManager {
             LOG.warn("We got a connection request from a server with our own ID. "
                     + "This should be either a configuration error, or a bug.");
         } else { // Otherwise start worker threads to receive data.
+            /**
+             * 如果对方 sid 大于 自己的sid 则创建两个线程 监听
+             *
+             * SendWorker 和 RecvWorker 关联
+             * RecvWorker 内部持有 SendWorker
+             */
             SendWorker sw = new SendWorker(sock, sid);
             RecvWorker rw = new RecvWorker(sock, din, sid, sw);
             sw.setRecv(rw);
@@ -648,15 +661,17 @@ public class QuorumCnxManager {
                 vsw.finish();
             }
 
+            // 将 sendwork 保存引用
             senderWorkerMap.put(sid, sw);
-            /**
-             * 记录这个比自己大的 sid
-             */
+            // 创建sid 对应的 blockingQueue
             queueSendMap.putIfAbsent(sid,
                     new ArrayBlockingQueue<ByteBuffer>(SEND_CAPACITY));
 
             /**
              * 发送选票
+             *
+             *  其实就是发送 sid 对应的BlockingQueue 中数据
+             * queueSendMap 中(sid,BlockingQueue);
              */
             sw.start();
             /**
@@ -692,6 +707,7 @@ public class QuorumCnxManager {
              } else {
                  addToSendQueue(bq, b);
              }
+             //连接 发送 sid 和 addressip
              connectOne(sid);
 
         }
