@@ -1042,7 +1042,9 @@ public class FastLeaderElection implements Election {
                              * relevant message from the reception queue
                              */
                             if (n == null) {
-                                //修改状态
+                                /**
+                                 * 修改自身 状态(LEADING FOLLOWING OBSERVING)
+                                 */
                                 self.setPeerState((proposedLeader == self.getId()) ?
                                         ServerState.LEADING: learningState());
                                 Vote endVote = new Vote(proposedLeader,

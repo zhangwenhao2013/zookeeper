@@ -1295,6 +1295,11 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                         try {
                             LOG.info("OBSERVING");
                             setObserver(makeObserver(logFactory));
+                            /**
+                             *  ping leader
+                             *  正常内部是一个while循环
+                             *  如果出现异常 就会走finally  更新状态 开始重新选举
+                             */
                             observer.observeLeader();
                         } catch (Exception e) {
                             LOG.warn("Unexpected exception", e);
@@ -1308,6 +1313,11 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                         try {
                             LOG.info("FOLLOWING");
                             setFollower(makeFollower(logFactory));
+                            /**
+                             * ping leader
+                             * 正常内部是一个while循环
+                             * 如果出现异常 就会走finally  更新状态 开始重新选举
+                             */
                             follower.followLeader();
                         } catch (Exception e) {
                             LOG.warn("Unexpected exception", e);
