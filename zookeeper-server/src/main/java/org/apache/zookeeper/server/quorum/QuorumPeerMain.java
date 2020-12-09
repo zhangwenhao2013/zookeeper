@@ -206,6 +206,9 @@ public class QuorumPeerMain {
             quorumPeer.setConfigFileName(config.getConfigFilename());
             // TODO: 2020/11/25   ZKDatabase
             quorumPeer.setZKDatabase(new ZKDatabase(quorumPeer.getTxnFactory()));
+            /**
+             * 设置最终的裁定机制
+             */
             quorumPeer.setQuorumVerifier(config.getQuorumVerifier(), false);
             if (config.getLastSeenQuorumVerifier() != null) {
                 quorumPeer.setLastSeenQuorumVerifier(config.getLastSeenQuorumVerifier(), false);

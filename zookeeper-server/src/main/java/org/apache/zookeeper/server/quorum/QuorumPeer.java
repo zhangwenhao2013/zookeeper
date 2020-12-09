@@ -1215,7 +1215,8 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
         }
 
         try {
-            /*
+            /**
+             * 循环
              * Main loop
              */
             while (running) {
@@ -1254,13 +1255,17 @@ public class QuorumPeer extends ZooKeeperThread implements QuorumStats.Provider 
                             try {
                                 roZkMgr.start();
                                 reconfigFlagClear();
+                                /**
+                                 * restarting leader election
+                                 * 只有选举重启才会走这个逻辑
+                                 */
                                 if (shuttingDownLE) {
                                     shuttingDownLE = false;
                                     startLeaderElection();
                                 }
                                 /**
                                  * 设置选票
-                                 * FastLeaderElection 
+                                 * FastLeaderElection
                                  */
                                 setCurrentVote(makeLEStrategy().lookForLeader());
                             } catch (Exception e) {
