@@ -648,8 +648,7 @@ public class QuorumCnxManager {
             /**
              * 如果对方 sid 大于 自己的sid 则创建两个线程 监听
              *
-             * SendWorker 和 RecvWorker 关联
-             * RecvWorker 内部持有 SendWorker
+             * SendWorker 和 RecvWorker 关联 是一对CP
              */
             SendWorker sw = new SendWorker(sock, sid);
             RecvWorker rw = new RecvWorker(sock, din, sid, sw);
@@ -987,7 +986,7 @@ public class QuorumCnxManager {
                             // this may delay next peer connection requests.
 
                             /**
-                             * 接收和处理消息
+                             * 接收和处理消息  两个逻辑 最终都会调用 receiveConnection(client) 方法
                              */
                             if (quorumSaslAuthEnabled) {
                                 receiveConnectionAsync(client);
