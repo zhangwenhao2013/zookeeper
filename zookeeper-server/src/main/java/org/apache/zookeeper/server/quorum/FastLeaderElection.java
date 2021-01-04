@@ -943,6 +943,8 @@ public class FastLeaderElection implements Election {
                  */
                 /**
                  * 取出接收到的消息(非阻塞)
+                 *
+                 * recvqueue 在 FastLeaderElection 构造中被创建
                  */
                 Notification n = recvqueue.poll(notTimeout,
                         TimeUnit.MILLISECONDS);
